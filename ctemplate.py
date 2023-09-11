@@ -1,0 +1,100 @@
+# ctemplate.py
+
+import sys
+import datetime
+
+
+class ctemplate:
+
+    __fileName = ' '
+    __sourceName = ' '
+    __headerName = ' '
+    __versionName = ' '
+    __time = datetime.datetime.now().strftime('%Y.%m.%d')
+    __fileComments = {'@attention':'COPYRIGHT LN',
+                      '@note':' ',
+                      '@brief':' ',
+                      '@date':__time,
+                      '@version':'V01',
+                      '@author':'LN',
+                      '@file':" ",
+    }
+
+    __CommentsOrder = ('@file','@author','@version','@date','@brief','@note','@attention')
+
+    def __init__(self,s):
+        self.__fileName = s
+        self.__sourceName = s + ".c"
+        self.__headerName = s + '.h'
+        self.__versionName = s + ".md"
+
+    def generateCommentsAtTop(self,name):
+        self.__fileComments['@file'] = name
+
+        comments = ('/**\n')    
+
+        #find max length of string
+        maxLen = 0
+        for s in self.__CommentsOrder:
+            if(len(s) > maxLen):
+                maxLen = len(s)
+
+        for k in self.__CommentsOrder:
+            alignSpaceAmount = maxLen - len(k) + 4
+            alignSpace = alignSpaceAmount * ' '
+            comments += ('* '+ k + alignSpace + self.__fileComments[k] + '\n')
+
+        comments += ('**/\n\n')
+
+        return comments
+
+    def generateCommentsInTheEnd(self):
+        return ("/********************* (C) COPYRIGHT LI NING *******END OF FILE ********/\n")
+
+    def createSource(self):
+        fh = open(self.__sourceName,mode = 'w',encoding='utf-8')
+        cm = self.generateCommentsAtTop(self.__sourceName)
+        cm += ("#include \"%s\"\n" %self.__headerName) 
+        cm += ("\n"*10)
+        cm += self.generateCommentsInTheEnd()
+        fh.write(cm)
+        fh.close()
+
+    def createHeader(self):
+        fh = open(self.__headerName,mode = 'w',encoding='utf-8')
+        cm = self.generateCommentsAtTop(self.__headerName)
+        cm += "#ifndef __%s_H\n" %self.__fileName.upper()
+        cm += "#define __%s_H\n" %self.__fileName.upper()
+        cm += "\n#ifdef EXPORT_MDS_GLOBALS\n#define EXTERN\n#else\n#define EXTERN extern\n#endif\n\n"
+        cm += "#ifdef EXPORT_MDS_GLOBALS\n\nEXTERN x X\n\n#else\n\nEXTERN x X\n\n#endif\n"
+        cm += ("\n"*10)
+        cm += "#undef EXTERN\n"
+        cm += "#endif\n"
+        cm += self.generateCommentsInTheEnd()
+        fh.write(cm)
+        fh.close() 
+
+    def creatVersionHistory(self):
+         fh = open(self.__versionName,mode = 'w',encoding = 'utf-8')
+         cm = self.generateCommentsAtTop(self.__versionName)
+         fh.write(cm)
+         fh.close()
+         
+
+    def createTemplatePairs(self):
+        self.createSource()
+        self.createHeader()
+        self.creatVersionHistory()
+
+# if __name__ == '__main__':
+#        if len(sys.argv) != 2:
+#           sys.stderr.write("please input corret parameter")
+#       else:
+#           s = sys.argv[1]
+#           ct = ctemplate(s)
+#           ct.createTemplatePairs() 
+
+if __name__ == '__main__':
+            s = "user_function"
+            ct = ctemplate(s)
+            ct.createTemplatePairs()
