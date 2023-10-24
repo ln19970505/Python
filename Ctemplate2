@@ -67,7 +67,8 @@ class ctemplate:
         cm = self.generateCommentsAtTop(self.__headerName)
         cm += "#ifndef __%s_H\n" %self.__fileName.upper()
         cm += "#define __%s_H\n" %self.__fileName.upper()
-        cm += "\n#ifdef EXPORT_%s\n#define EXTERN\n#else\n#define EXTERN extern\n#endif\n\n" %self.__fileName.upper()
+        cm += "\n#if defined (EXPORT_%s_H)\n  #define EXTERN\n#else\n  #define EXTERN extern\n#endif\n\n" %self.__fileName.upper()
+#        cm += "\n#ifdef EXPORT_%s\n#define EXTERN\n#else\n#define EXTERN extern\n#endif\n\n" %self.__fileName.upper()
 #        cm += "#ifdef EXPORT_MDS_GLOBALS\n\nEXTERN x X\n\n#else\n\nEXTERN x X\n\n#endif\n"
         cm += ("\n"*10)
         cm += "#undef EXTERN\n"
