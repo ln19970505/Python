@@ -54,7 +54,9 @@ class ctemplate:
     def createSource(self):
         fh = open(self.__sourceName,mode = 'w',encoding='utf-8')
         cm = self.generateCommentsAtTop(self.__sourceName)
+        cm += "#define EXPORT_%s_H\n" %self.__fileName.upper()
         cm += ("#include \"%s\"\n" %self.__headerName) 
+        cm += "#undef EXPORT_%s_H" %self.__fileName.upper()
         cm += ("\n"*10)
         cm += self.generateCommentsInTheEnd()
         fh.write(cm)
@@ -65,8 +67,8 @@ class ctemplate:
         cm = self.generateCommentsAtTop(self.__headerName)
         cm += "#ifndef __%s_H\n" %self.__fileName.upper()
         cm += "#define __%s_H\n" %self.__fileName.upper()
-        cm += "\n#ifdef EXPORT_MDS_GLOBALS\n#define EXTERN\n#else\n#define EXTERN extern\n#endif\n\n"
-        cm += "#ifdef EXPORT_MDS_GLOBALS\n\nEXTERN x X\n\n#else\n\nEXTERN x X\n\n#endif\n"
+        cm += "\n#ifdef EXPORT_%s\n#define EXTERN\n#else\n#define EXTERN extern\n#endif\n\n" %self.__fileName.upper()
+#        cm += "#ifdef EXPORT_MDS_GLOBALS\n\nEXTERN x X\n\n#else\n\nEXTERN x X\n\n#endif\n"
         cm += ("\n"*10)
         cm += "#undef EXTERN\n"
         cm += "#endif\n"
@@ -84,7 +86,7 @@ class ctemplate:
     def createTemplatePairs(self):
         self.createSource()
         self.createHeader()
-        self.creatVersionHistory()
+#        self.creatVersionHistory()
 
 # if __name__ == '__main__':
 #        if len(sys.argv) != 2:
